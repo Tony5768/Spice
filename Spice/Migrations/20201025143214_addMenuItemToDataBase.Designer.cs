@@ -10,8 +10,8 @@ using Spice.Data;
 namespace Spice.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20201021192510_addMenuItemToDB")]
-    partial class addMenuItemToDB
+    [Migration("20201025143214_addMenuItemToDataBase")]
+    partial class addMenuItemToDataBase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -244,6 +244,9 @@ namespace Spice.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -264,6 +267,8 @@ namespace Spice.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("SubCategoryId");
 
@@ -344,6 +349,12 @@ namespace Spice.Migrations
 
             modelBuilder.Entity("Spice.Models.MenuItem", b =>
                 {
+                    b.HasOne("Spice.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Spice.Models.SubCategory", "SubCategory")
                         .WithMany("MenuItems")
                         .HasForeignKey("SubCategoryId")

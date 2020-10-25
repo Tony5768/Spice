@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Spice.Migrations
 {
-    public partial class addMenuItemToDB : Migration
+    public partial class addMenuItemToDataBase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -196,17 +196,24 @@ namespace Spice.Migrations
                     Spicyness = table.Column<string>(nullable: true),
                     Image = table.Column<string>(nullable: true),
                     SubCategoryId = table.Column<int>(nullable: false),
+                    CategoryId = table.Column<int>(nullable: false),
                     Price = table.Column<double>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MenuItem", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_MenuItem_Category_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Category",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                    table.ForeignKey(
                         name: "FK_MenuItem_SubCategory_SubCategoryId",
                         column: x => x.SubCategoryId,
                         principalTable: "SubCategory",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(
@@ -247,6 +254,11 @@ namespace Spice.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MenuItem_CategoryId",
+                table: "MenuItem",
+                column: "CategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MenuItem_SubCategoryId",
