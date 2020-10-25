@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,33 +12,35 @@ using Spice.Models;
 using Spice.Models.ViewModels;
 using Spice.Utility;
 
-namespace Spice.Controllers
+namespace Spice.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class MenuItemController : Controller
     {
         private readonly ApplicationDbContext db;
-        private readonly IWebHostEnvironment hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
         [BindProperty]
         public MenuItemViewModel MenuItemVM { get; set; }
-        public MenuItemController(ApplicationDbContext db,
-                                  IWebHostEnvironment hostingEnvironment)
+
+        public MenuItemController(ApplicationDbContext db, IWebHostEnvironment hostingEnvironment)
         {
             this.db = db;
-            this.hostingEnvironment = hostingEnvironment;
+            _hostingEnvironment = hostingEnvironment;
             MenuItemVM = new MenuItemViewModel()
             {
-                Category = db.Category,
+                Category = this.db.Category,
                 MenuItem = new Models.MenuItem()
             };
         }
+
         public async Task<IActionResult> Index()
         {
-            var menuItems = await db.MenuItem.Include(x => x.Category).Include(x => x.SubCategory).ToListAsync();
+            var menuItems = await db.MenuItem.Include(m => m.Category).Include(m => m.SubCategory).ToListAsync();
             return View(menuItems);
         }
 
+        //GET - CREATE
         public IActionResult Create()
         {
             return View(MenuItemVM);
@@ -59,7 +62,7 @@ namespace Spice.Controllers
 
             //Work on the image saving section
 
-            string webRootPath = hostingEnvironment.WebRootPath;
+            string webRootPath = _hostingEnvironment.WebRootPath;
             var files = HttpContext.Request.Form.Files;
 
             var menuItemFromDb = await db.MenuItem.FindAsync(MenuItemVM.MenuItem.Id);
@@ -88,6 +91,7 @@ namespace Spice.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
 
         //GET - EDIT
         public async Task<IActionResult> Edit(int? id)
@@ -125,7 +129,7 @@ namespace Spice.Controllers
 
             //Work on the image saving section
 
-            string webRootPath = hostingEnvironment.WebRootPath;
+            string webRootPath = _hostingEnvironment.WebRootPath;
             var files = HttpContext.Request.Form.Files;
 
             var menuItemFromDb = await db.MenuItem.FindAsync(MenuItemVM.MenuItem.Id);
@@ -164,7 +168,7 @@ namespace Spice.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        //GET - EDIT
+        //GET : Details MenuItem
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -182,7 +186,8 @@ namespace Spice.Controllers
             return View(MenuItemVM);
         }
 
-         public async Task<IActionResult> Delete(int? id)
+        //GET : Delete MenuItem
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
@@ -199,11 +204,12 @@ namespace Spice.Controllers
             return View(MenuItemVM);
         }
 
+        //POST Delete MenuItem
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            string webRootPath = hostingEnvironment.WebRootPath;
+            string webRootPath = _hostingEnvironment.WebRootPath;
             MenuItem menuItem = await db.MenuItem.FindAsync(id);
 
             if (menuItem != null)
