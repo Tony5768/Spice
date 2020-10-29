@@ -71,13 +71,13 @@
             console.log($(this).height());
             var ratio = $(this).height() / $(this).width();
             $(this).height(187);
-            console.log($(this).height());            
-                if ($(this).width() > 250 && ratio <= 1) {
-                    $(this).width(250 * ratio);
-                }
-                if ($(this).width() > 250 && ratio>1) {
-                    $(this).width(250 / ratio);
-                }
+            console.log($(this).height());
+            if ($(this).width() > 250 && ratio <= 1) {
+                $(this).width(250 * ratio);
+            }
+            if ($(this).width() > 250 && ratio > 1) {
+                $(this).width(250 / ratio);
+            }
         });
         (function ($) {
             $("#menu-filters li").click(function () {
@@ -93,4 +93,5 @@
             });
         })(jQuery);
     </script>
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
