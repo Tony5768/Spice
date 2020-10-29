@@ -61,25 +61,36 @@
     }
 </div>
 
-@section Scripts{ 
-<script src="https://code.jquery.com/jquery-migrate-3.3.1.js"
-        integrity="sha256-lGuUqJUPXJEMgQX/RRaM6mZkK6ono5i5bHuBME4qOCo=" 
-        crossorigin="anonymous"></script>
+@section Scripts{
 
-<script>
-    var posts = $('.post');
-    (function ($) {
-        $("#menu-filters li").click(function () {
-            $("#menu-filters li").removeClass('active btn btn-secondary');
-            $(this).addClass('active btn btn-secondary');
-
-            var selectedFilter = $(this).data("filter");
-
-            $(".menu-restaurant").hide();
-            setTimeout(function () {
-                $(selectedFilter).slideToggle();
-            });
+    <script>
+        var posts = $('.post');
+        console.log($(".MenuItemImage"));
+        $(".MenuItemImage").each(function (index) {
+            console.log($(this).width());
+            console.log($(this).height());
+            var ratio = $(this).height() / $(this).width();
+            $(this).height(187);
+            console.log($(this).height());            
+                if ($(this).width() > 250 && ratio <= 1) {
+                    $(this).width(250 * ratio);
+                }
+                if ($(this).width() > 250 && ratio>1) {
+                    $(this).width(250 / ratio);
+                }
         });
-    })(jQuery);
-</script>
+        (function ($) {
+            $("#menu-filters li").click(function () {
+                $("#menu-filters li").removeClass('active btn btn-secondary');
+                $(this).addClass('active btn btn-secondary');
+
+                var selectedFilter = $(this).data("filter");
+
+                $(".menu-restaurant").hide();
+                setTimeout(function () {
+                    $(selectedFilter).slideToggle();
+                });
+            });
+        })(jQuery);
+    </script>
 }
