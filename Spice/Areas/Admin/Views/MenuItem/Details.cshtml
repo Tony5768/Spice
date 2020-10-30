@@ -30,7 +30,9 @@
                     <label asp-for="MenuItem.Description" class="col-form-label"></label>
                 </div>
                 <div class="col-8">
-                    @Html.TextAreaFor(m => m.MenuItem.Description)
+                    <div class="border p-2" style="word-wrap:break-word;">
+                        @Html.Raw(Model.MenuItem.Description)
+                    </div>
                 </div>
                 <span asp-validation-for="MenuItem.Description" class="text-danger"></span>
             </div>
