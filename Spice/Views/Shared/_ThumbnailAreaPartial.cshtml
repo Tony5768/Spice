@@ -1,5 +1,5 @@
 ﻿@model IEnumerable<MenuItem>
-@if(Model.Count()>0)
+@if (Model.Count() > 0)
 {
     <div class="col-12 post @Model.FirstOrDefault().Category.Name.Replace(" ",string.Empty) menu-restaurant">
         <div class="row">
@@ -8,10 +8,10 @@
 
         @foreach (var item in Model)
         {
-            <div class="border border-info rounded col-12" style="margin-bottom:10px; margin-top:10px; padding:10px;" >
+            <div class="border border-info rounded col-12" style="margin-bottom:10px; margin-top:10px; padding:10px;">
                 <div class="row">
                     <div class="col-md-3 col-sm-12 d-flex justify-content-center">
-                        <img src="@item.Image" style ="max-height:428px; width:99%; border-radius:5px;border:1px solid #bbb9b9" />
+                        <img src="@item.Image" style="max-height:428px; width:99%; border-radius:5px;border:1px solid #bbb9b9" />
                     </div>
                     <div class="col-md-9 col-sm-12">
                         <div class="row pr-3">
@@ -36,9 +36,9 @@
                         </div>
                         <div class="row col-12 text-justify d-none d-md-block" style="word-wrap:break-word;">
                             @Html.Raw(item.Description)
-                        </div>
-                        <div class="col-md-3 col-sm-12 offset-md-9 text-center">
-                            <a asp-action="Details" asp-area="Customer" class="btn btn-success form-control" asp-route-id="@item.Id">Details</a>
+                        </div> 
+                        <div class="col-md-3 col-sm-12 offset-md-9 text-center bottom-right">
+                                <a asp-action="Details" asp-area="Customer" class="btn btn-success form-control" asp-route-id="@item.Id">Details</a>
                         </div>
                     </div>
                 </div>

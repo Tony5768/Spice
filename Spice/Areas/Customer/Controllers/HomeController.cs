@@ -35,10 +35,16 @@ namespace Spice.Controllers
             {
                 MenuItems = await db.MenuItem.Include(m => m.Category).Include(m => m.SubCategory).ToListAsync(),
                 Categories = await db.Category.ToListAsync(),
-                Coupons = await db.Coupon.Where(c => c.IsActive == true).ToListAsync()
-
+                Coupons = await db.Coupon.Where(c => c.IsActive == true).ToListAsync(),
             };
-
+            foreach (var MenuItem in IndexVM.MenuItems)
+            {
+                MenuItem.Description =  SD.ConvertToRawHtml(MenuItem.Description);
+                if (MenuItem.Description.Length > 500)
+                {
+                    MenuItem.Description = MenuItem.Description.Substring(0, 500) + "...";
+                }
+            }
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
@@ -109,7 +115,7 @@ namespace Spice.Controllers
                 return View(cartObj);
             }
         }
-            public IActionResult Privacy()
+        public IActionResult Privacy()
         {
             return View();
         }
