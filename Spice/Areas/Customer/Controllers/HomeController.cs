@@ -40,9 +40,9 @@ namespace Spice.Controllers
             foreach (var MenuItem in IndexVM.MenuItems)
             {
                 MenuItem.Description =  SD.ConvertToRawHtml(MenuItem.Description);
-                if (MenuItem.Description.Length > 500)
+                if (MenuItem.Description.Length > 498)
                 {
-                    MenuItem.Description = MenuItem.Description.Substring(0, 500) + "...";
+                    MenuItem.Description = MenuItem.Description.Substring(0, 498) + "...";
                 }
             }
             var claimsIdentity = (ClaimsIdentity)User.Identity;

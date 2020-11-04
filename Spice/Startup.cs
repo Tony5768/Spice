@@ -14,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Spice.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Spice.Utility;
+using Stripe;
 
 namespace Spice
 {
@@ -36,7 +38,9 @@ namespace Spice
                 .AddDefaultTokenProviders()
                 .AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddSingleton<IEmailSender, EmailSender>();
+
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
+
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
 
@@ -66,6 +70,7 @@ namespace Spice
             app.UseStaticFiles();
 
             app.UseRouting();
+            StripeConfiguration.SetApiKey(Configuration.GetSection("Stripe")["SecretKey"]);
             app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
