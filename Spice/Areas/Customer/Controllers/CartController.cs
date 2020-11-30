@@ -188,7 +188,8 @@ namespace Spice.Areas.Customer.Controllers
             }
 
             await db.SaveChangesAsync();
-            return RedirectToAction("Index","Home");
+            //return RedirectToAction("Index","Home");
+            return RedirectToAction("Confirm", "Order", new { id = detailCart.OrderHeader.Id });
         }
 
         public IActionResult AddCoupon()
