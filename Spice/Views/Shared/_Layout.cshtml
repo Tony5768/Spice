@@ -58,6 +58,16 @@
 
                             </li>
                         }
+
+                        @if (@User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.CustomerEndUser))
+                        {
+                            <li class="nav-item">
+                                <a asp-area="Customer" asp-action="OrderHistory" asp-controller="Order" class="nav-link">
+                                    Order History
+                                </a>
+                            </li>
+                        }
+
                         @if (HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount) != null)
                         {
                             <li style="color:white">
