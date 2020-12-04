@@ -1,16 +1,16 @@
-﻿@model IEnumerable<Spice.Models.ViewModels.OrderDetailsViewModel>
+﻿@model Spice.Models.ViewModels.OrderListViewModel
+@using Spice.Utility
 @{
-    ViewData["Title"] = "OrderHistory";
+    ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <br />
 <br />
-
 <div class="border backgroundWhite">
     <div class="row">
         <div class="col-6">
-            <h2 class="text-info">Category List</h2>
+            <h2 class="text-info"> Past Order List</h2>
         </div>
         <div class="col-6 text-right">
             <partial name="_CreateButtonPartial" />
@@ -18,31 +18,32 @@
     </div>
     <br />
     <div>
-        @if (Model.Count() > 0)
+        @if (Model.Orders.Count() > 0)
         {
             <table class="table table-striped border">
                 <tr class="table-secondary">
                     <th>
-                        @Html.DisplayNameFor(m => m.OrderHeader.Id)
+                        @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.Id)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.OrderHeader.PickupName)
+                        @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.PickupName)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.OrderHeader.ApplicationUser.Email)
+                        @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.ApplicationUser.Email)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.OrderHeader.PickupTime)
+                        @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.PickupTime)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.OrderHeader.OrderTotal)
+                        @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.OrderTotal)
                     </th>
                     <th>
                         Total Items
                     </th>
                     <th></th>
+
                 </tr>
-                @foreach (var item in Model)
+                @foreach (var item in Model.Orders)
                 {
                     <tr>
                         <td>
@@ -65,12 +66,23 @@
                         </td>
                         <td>
                             <button type="submit" class="btn btn-success anchorDetail" data-id="@item.OrderHeader.Id" data-toggle="modal">
-                                <i class="far fa-list-alt"></i>&nbsp; Details
+                                <i class="far fa-list-alt"></i> Details
                             </button>
+                            @if (item.OrderHeader.Status == SD.StatusSubmitted || item.OrderHeader.Status == SD.StatusInProcess || item.OrderHeader.Status == SD.StatusCompleted || item.OrderHeader.Status == SD.StatusReady)
+                            {
+                                <button type="button" class="btn btn-info btnOrderStatus" data-id="@item.OrderHeader.Id" data-toggle="modal">
+                                    <i class="far fa-clock"></i> Status
+                                </button>
+                            }
                         </td>
                     </tr>
                 }
             </table>
+            <div page-model="@Model.PagingInfo" page-classes-enabled="true" page-class="btn border"
+                 page-class-normal="btn btn-light" page-class-selected="btn btn-info active"
+                 class="btn-group float-right">
+            </div>
+            <br />
         }
         else
         {
@@ -80,7 +92,7 @@
 </div>
 
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog-centered modal-dialog" role="dialog">
+    <div class="modal-dialog-centered modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header bg-success text-light justify-content-center">
                 <h5 class="modal-title">Order Details</h5>
@@ -94,11 +106,25 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="myOrderStatus" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-light justify-content-center">
+                <h5 class="modal-title">Order Status </h5>
+            </div>
+            <div class="modal-body justify-content-center" id='myOrderStatusContent'>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" style="width:20%" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-@section scripts
-{
+@section Scripts {
     <script>
         var PostBackURL = '/Customer/Order/GetOrderDetails';
+        var OrderStatusURL = '/Customer/Order/GetOrderStatus';
         $(function () {
             $(".anchorDetail").click(function () {
                 var $buttonClicked = $(this);
@@ -119,9 +145,25 @@
                     }
                 });
             });
+            $(".btnOrderStatus").click(function () {
+                var $buttonClicked = $(this);
+                var id = $buttonClicked.attr('data-id');
+                $.ajax({
+                    type: "GET",
+                    url: OrderStatusURL,
+                    contentType: "text/html; charset=utf-8",
+                    data: { "Id": id },
+                    cache: false,
+                    dataType: "html",
+                    success: function (data) {
+                        $('#myOrderStatusContent').html(data);
+                        $('#myOrderStatus').modal('show');
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed.");
+                    }
+                });
+            });
         });
     </script>
 }
-
-
-
