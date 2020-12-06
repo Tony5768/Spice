@@ -1,5 +1,6 @@
 ﻿@model Spice.Models.ViewModels.OrderDetailsViewModel
-<form method="post">
+@using Spice.Utility;
+<form asp-action="OrderPickup" asp-controller="Order" asp-route-orderId="@Model.OrderHeader.Id" method="post">
     <div class="container row border ml-1 backgroundWhiteBorder10Padding" style="width:100%">
         <div class="col-lg-8 col-12" style="border-right:1px solid #bbb9b9">
             <br />
@@ -87,8 +88,15 @@
                 </li>
 
             </ul>
+            @if (Model.OrderHeader.Status.Equals(SD.StatusReady) && (User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.FrontDeskUser)))
+            {
+                <button type="submit" class="btn btn-success form-control"><i class="far fa-thumbs-up"></i>Confirm Pickup</button>
+            }
+            else
+            {
+                <button type="submit" disabled class="btn btn-info form-control">@Model.OrderHeader.Status</button>
 
-            <button type="submit" disabled class="btn btn-info form-control">@Model.OrderHeader.Status</button>
+            }
         </div>
     </div>
 </form>
