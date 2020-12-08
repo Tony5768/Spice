@@ -12,7 +12,7 @@ using Spice.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Spice.Services;
+using Spice.Service;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Spice.Utility;
 using Stripe;
@@ -40,6 +40,8 @@ namespace Spice
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
+            services.Configure<EmailOptions>(Configuration);
+            services.AddSingleton<IEmailSender, EmailSender>();
 
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();

@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Spice.Data;
@@ -17,10 +18,13 @@ namespace Spice.Areas.Customer.Controllers
     [Area("Customer")]
     public class OrderController : Controller
     {
+        private readonly IEmailSender emailSender;
         private ApplicationDbContext db;
         private int PageSize = 2;
-        public OrderController(ApplicationDbContext db)
+        public OrderController(ApplicationDbContext db,
+                                IEmailSender emailSender)
         {
+            this.emailSender = emailSender;
             this.db = db;
         }
 
@@ -141,8 +145,11 @@ namespace Spice.Areas.Customer.Controllers
             OrderHeader orderHeader = await db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusReady;
             await db.SaveChangesAsync();
+            await emailSender.SendEmailAsync(
+                   db.Users.Where(u => u.Id == orderHeader.UserId).FirstOrDefault().Email,
+                   "Spice - Order Ready For Pickup " + orderHeader.Id.ToString(),
+                   "Order is ready for pickup.");
 
-            //Email logic to notify user that order is ready for pickup
             return RedirectToAction("ManageOrder", "Order");
         }
 
@@ -152,6 +159,10 @@ namespace Spice.Areas.Customer.Controllers
             OrderHeader orderHeader = await db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusCancelled;
             await db.SaveChangesAsync();
+            await emailSender.SendEmailAsync(
+                    db.Users.Where(u => u.Id == orderHeader.UserId).FirstOrDefault().Email,
+                    "Spice - Order Cancelled " + orderHeader.Id.ToString(),
+                    "Order has been cancelled successfully.");
             return RedirectToAction("ManageOrder", "Order");
         }
 
@@ -259,6 +270,10 @@ namespace Spice.Areas.Customer.Controllers
             OrderHeader orderHeader = await db.OrderHeader.FindAsync(orderId);
             orderHeader.Status = SD.StatusCompleted;
             await db.SaveChangesAsync();
+            await emailSender.SendEmailAsync(
+                   db.Users.Where(u => u.Id == orderHeader.UserId).FirstOrDefault().Email,
+                   "Spice - Order Completed " + orderHeader.Id.ToString(),
+                   "Order has been completed successfully.");
             return RedirectToAction("OrderPickup", "Order");
         }
     }
